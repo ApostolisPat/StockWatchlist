@@ -1,2 +1,6 @@
 sqlalchemy
 fastapi[standard]
+bcrypt
+pyjwt
+python-dotenv
+python-jose

@@ -9,5 +9,5 @@ app = FastAPI()
 Base.metadata.create_all(bind=engine)
 
 #Add routers
-#app.include_router(users.router)
+app.include_router(users.router)
 #app.include_router(watchlist.router)
