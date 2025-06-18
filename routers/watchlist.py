@@ -38,18 +38,33 @@ def get_watchlist(db: Session = Depends(database.get_db), db_user: models.User =
     #Return all() the symbols
     watchlist_items = db.query(models.Watchlist).filter(models.Watchlist.user_id == db_user.id).all()
     stock_data = []
+    stock_historic_data = []
     for item in watchlist_items:
         ticker = yf.Ticker(item.symbol)
         info = ticker.info
+
+        """ if str(item.symbol)=="TSLA":
+            history = ticker.history(period="3d")
+            stock_historic_data.append({
+                "date": history.Date
+            }) """
+
         
         if not info or 'regularMarketPrice' not in info:
             continue
-        
+
         stock_data.append({
             "symbol" : item.symbol,
             "name": info.get("shortName", "N/A"),
             "price": info.get('regularMarketPrice', 0),
-            "currency": info.get("currency", "EUR")
+            "currency": info.get("currency", "EUR"),
+            "change_percent": info.get('regularMarketChangePercent','N/A'),
+            "open": info.get('regularMarketOpen','N/A'),
+            "high": info.get('regularMarketDayHigh','N/A'),
+            "low": info.get('regularMarketDayLow','N/A'),
+            "volume": info.get('regularMarketVolume','N/A'),
+            "market_cap": info.get('marketCap','N/A'),
+            
         })
         
     return stock_data

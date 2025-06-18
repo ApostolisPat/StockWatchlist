@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List, Optional
 from pydantic import BaseModel, EmailStr, Field
 
 class UserCreate(BaseModel):
@@ -31,8 +32,23 @@ class WatchlistCreate(BaseModel):
 class WatchlistResponse(BaseModel):
     symbol: str
     
+
+class HistoricalDate(BaseModel):
+    date: datetime
+    open: float
+    high: float
+    low: float
+    close: float    
+
 class StockData(BaseModel):
     symbol: str
     name: str
     price: float
     currency: str
+    change_percent: float
+    open: float
+    high: float
+    low: float
+    volume: int
+    market_cap: Optional[float]
+    #history: Optional[List[HistoricalDate]]
