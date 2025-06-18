@@ -30,3 +30,9 @@ class WatchlistCreate(BaseModel):
         
 class WatchlistResponse(BaseModel):
     symbol: str
+    
+class StockData(BaseModel):
+    symbol: str
+    name: str
+    price: float
+    currency: str
