@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field
 
 class UserCreate(BaseModel):
@@ -17,3 +18,15 @@ class UserResponse(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+    
+class WatchlistCreate(BaseModel):
+    id: int
+    symbol: str
+    created_at: datetime
+    
+    #To turn SQLAlchemy object to dictionary
+    class Config:
+        orm_mode = True
+        
+class WatchlistResponse(BaseModel):
+    symbol: str

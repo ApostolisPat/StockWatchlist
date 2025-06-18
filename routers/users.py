@@ -34,11 +34,10 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     db_user = db.query(models.User).filter(models.User.username == form_data.username).first()
     if not db_user or not auth.verify_password(form_data.password, str(db_user.password)):
         raise HTTPException(status_code=401, detail="Invalid Credentials")
-        print("invalid")
     
-    access_token = auth.create_access_token({"sub": db_user.username})
+    access_token = auth.create_access_token({"sub": str(db_user.id)})
     
-    return {"access token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get('/all', response_model=list[schemas.UserResponse])
 def get_all_users(db: Session = Depends(database.get_db)):

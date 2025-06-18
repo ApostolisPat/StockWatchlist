@@ -49,13 +49,13 @@ def get_current_user(token: str = Depends(oauth2scheme), db: Session = Depends(g
     
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get('sub')
-        if username is None:
+        user_id = payload.get('sub')
+        if user_id is None:
             raise invalid_credentials_exception
     except JWTError:
         raise invalid_credentials_exception
     
-    user_db = db.query(User).filter(User.username == username).first()
+    user_db = db.query(User).filter(User.id == int(user_id)).first()
     if user_db is None:
         raise invalid_credentials_exception
     return user_db
