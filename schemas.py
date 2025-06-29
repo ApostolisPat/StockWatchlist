@@ -34,11 +34,14 @@ class WatchlistResponse(BaseModel):
     
 
 class HistoricalDate(BaseModel):
-    date: datetime
+    date: str
     open: float
     high: float
     low: float
     close: float    
+    volume: int
+    dividends: float
+    stock_splits: float
 
 class StockData(BaseModel):
     symbol: str
@@ -51,4 +54,4 @@ class StockData(BaseModel):
     low: float
     volume: int
     market_cap: Optional[float]
-    #history: Optional[List[HistoricalDate]]
+    history: Optional[List[HistoricalDate]]

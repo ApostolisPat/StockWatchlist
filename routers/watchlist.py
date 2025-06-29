@@ -1,5 +1,5 @@
-from typing import List
-from fastapi import APIRouter, Depends,HTTPException
+from typing import List, Annotated
+from fastapi import APIRouter, Depends,HTTPException, Query
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from .. import schemas, models, auth, database
@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 @router.post('')
-def add_stock(symbol: str, db: Session = Depends(database.get_db), db_user: models.User = Depends(auth.get_current_user)):
+def add_stock(symbol: Annotated[str, Query(min_length=2, max_length=10)], db: Session = Depends(database.get_db), db_user: models.User = Depends(auth.get_current_user)):
     #Check if symbol exists in yahoo
     if not is_valid_stock_symbol(symbol):
         raise HTTPException(status_code=404, detail=f"Stock with symbol {symbol} does not exist in yahoo database")
@@ -43,11 +43,20 @@ def get_watchlist(db: Session = Depends(database.get_db), db_user: models.User =
         ticker = yf.Ticker(item.symbol)
         info = ticker.info
 
-        """ if str(item.symbol)=="TSLA":
-            history = ticker.history(period="3d")
+        #Save historic data
+        history = ticker.history(period="3d")
+        print(history)
+        for index, row in history.iterrows():
             stock_historic_data.append({
-                "date": history.Date
-            }) """
+                "date": index.strftime("%m-%d-%Y"),
+                "open": row['Open'],
+                "high": row['High'],
+                "low": row['Low'],
+                "close": row['Close'],
+                "volume": row['Volume'],
+                "dividends": row.get('Dividends', 0),
+                "stock_splits": row.get('Stock Splits', 0)
+            })
 
         
         if not info or 'regularMarketPrice' not in info:
@@ -64,7 +73,7 @@ def get_watchlist(db: Session = Depends(database.get_db), db_user: models.User =
             "low": info.get('regularMarketDayLow','N/A'),
             "volume": info.get('regularMarketVolume','N/A'),
             "market_cap": info.get('marketCap','N/A'),
-            
+            "history": stock_historic_data
         })
         
     return stock_data
